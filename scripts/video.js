@@ -15,13 +15,25 @@ const loadVideos = () => {
 }
 
 
+const removeActiveClass = () => {
+  const buttons = document.getElementsByClassName("category-btn")
+  for (let btn of buttons) {
+    btn.classList.remove("active");
+  }
+}
+
+
 const loadCategoryVideos = (id) => {
   fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
     .then(res => res.json())
-    .then(data => displayVideos(data.category))
+    .then(data => {
+      removeActiveClass();
+      const activeButton = document.getElementById(`btn-${id}`);
+      activeButton.classList.add("active");
+      displayVideos(data.category);
+    })
     .catch(error => console.log(error))
 }
-
 
 // Display categories
 const displayCategories = (categories) => {
@@ -30,7 +42,7 @@ const displayCategories = (categories) => {
     const buttonContainer = document.createElement("div")
     buttonContainer.innerHTML =
       `
-     <button onclick="loadCategoryVideos(${items.category_id})" class="btn">
+     <button id="btn-${items.category_id}" onclick="loadCategoryVideos(${items.category_id})" class="btn category-btn">
       ${items.category}
      </button>
     `
@@ -71,6 +83,21 @@ const carDemo = {
 const displayVideos = (videos) => {
   const videosContainer = document.getElementById('videos');
   videosContainer.innerHTML = "";
+  if (videos.length === 0) {
+    videosContainer.classList.remove("grid");
+    videosContainer.innerHTML = `
+     <div class="min-h-[300px] flex flex-col items-center justify-center gap-5">
+      <img src="assets/icon.png">
+      <h2 class="text-center text-2xl font-bold">
+       No Content Here In This Category
+      </h2>
+     </div>
+    `
+    return
+  }
+  else {
+    videosContainer.classList.add("grid");
+  }
   videos.forEach(video => {
     console.log(video);
     const card = document.createElement('div');
