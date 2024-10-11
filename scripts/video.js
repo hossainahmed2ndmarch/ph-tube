@@ -14,7 +14,25 @@ const loadVideos = () => {
     .catch(error => console.log(error));
 }
 
+const loadDetails = async (videoId) =>{
+  const url = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+  const res = await fetch (url);
+  const data = await res.json();
+  displayDetails(data.video);
+}
 
+
+// Display details
+const displayDetails = (video) =>{
+  const modalContainer = document.getElementById("modal-content");
+  modalContainer.innerHTML=`
+   <img class="rounded-lg h-full w-full object-cover" src="${video.thumbnail}"/>
+   <p>${video.description}</P>
+  `
+  document.getElementById("customModal").showModal();
+}
+
+// Remove active class
 const removeActiveClass = () => {
   const buttons = document.getElementsByClassName("category-btn")
   for (let btn of buttons) {
@@ -22,7 +40,7 @@ const removeActiveClass = () => {
   }
 }
 
-
+// Load category videos
 const loadCategoryVideos = (id) => {
   fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
     .then(res => res.json())
@@ -50,7 +68,7 @@ const displayCategories = (categories) => {
   });
 }
 
-
+// Show time
 function getTimeString(time) {
   const hour = parseInt(time / 3600);
   let remainingSeconds = time % 3600;
@@ -60,7 +78,7 @@ function getTimeString(time) {
 }
 
 
-const carDemo = {
+const cardDemo = {
   category_id: "1001",
   video_id: "aaaa",
   thumbnail: "https://i.ibb.co/L1b6xSq/shape.jpg",
@@ -124,8 +142,9 @@ const displayVideos = (videos) => {
          <div class="flex items-center gap-2">
           <p class="text-gray-400">${video.authors[0].profile_name}</P>
           ${video.authors[0].verified === true ? `<img class="w-5 object-cover" src="https://img.icons8.com/?size=48&id=98A4yZTt9abw&format=png"/>` : ""}
+
          </div>
-         <P></P>
+         <P><button onclick="loadDetails('${video.video_id}')" class="btn btn-sm btn-error">Details</button></P>
         </div>
       </div>
   `;
